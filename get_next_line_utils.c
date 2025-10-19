@@ -6,13 +6,13 @@
 /*   By: ssharmaz <ssharmaz@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 15:02:20 by ssharmaz          #+#    #+#             */
-/*   Updated: 2025/10/19 18:59:02 by ssharmaz         ###   ########.fr       */
+/*   Updated: 2025/10/19 20:00:15 by ssharmaz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <stdlib.h>
 #include "get_next_line.h"
+#include <stdlib.h>
+#include <unistd.h>
 
 char	*read_line_to_buffer(int fd, char *buffer, int buffer_size)
 {
@@ -36,7 +36,6 @@ char	*read_line_to_buffer(int fd, char *buffer, int buffer_size)
 		return (NULL);
 }
 
-
 char	*ft_strdup(const char *s)
 {
 	char	*ptr;
@@ -55,7 +54,6 @@ char	*ft_strdup(const char *s)
 	return (ptr);
 }
 
-
 char	*ft_strchr(const char *s, int c)
 {
 	char	*p;
@@ -72,7 +70,6 @@ char	*ft_strchr(const char *s, int c)
 	else
 		return (NULL);
 }
-
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
@@ -91,7 +88,6 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (p);
 }
 
-
 void	*ft_memset(void *s, int c, size_t n)
 {
 	size_t	i;
@@ -106,13 +102,38 @@ void	*ft_memset(void *s, int c, size_t n)
 	return (s);
 }
 
-
 size_t	ft_strlen(const char *s)
 {
 	size_t	len;
 
+	if (!s)
+		return (0);
 	len = 0;
 	while (s[len])
 		len++;
 	return (len);
+}
+
+size_t	ft_strlcat(char *dst, const char *src, size_t size)
+{
+	size_t	dlen;
+	size_t	slen;
+	size_t	i;
+
+	dlen = 0;
+	slen = 0;
+	while (src[slen] != '\0')
+		slen++;
+	while (dlen < size && dst[dlen] != '\0')
+		dlen++;
+	if (dlen == size)
+		return (size + slen);
+	i = 0;
+	while (src[i] != '\0' && dlen + i + 1 < size)
+	{
+		dst[dlen + i] = src[i];
+		i++;
+	}
+	dst[dlen + i] = '\0';
+	return (dlen + slen);
 }
