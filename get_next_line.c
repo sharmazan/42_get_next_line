@@ -6,7 +6,7 @@
 /*   By: ssharmaz <ssharmaz@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 15:02:20 by ssharmaz          #+#    #+#             */
-/*   Updated: 2025/10/21 18:31:34 by ssharmaz         ###   ########.fr       */
+/*   Updated: 2025/10/21 19:04:33 by ssharmaz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+// Handled:
+// not existing fd==-1 - return null
+// zero-file - return null
+// BUFFER_SIZE in the file - return BUFFER_SIZE bytes + 0 in the end
+// more then BUFFER_SIZE - return the string
 // TODO
-// save the buffer left after the new_line to continue reading
+// save the rest of the buffer after reaching a new_line to continue reading later
 
 char	*ft_zerostring(size_t size)
 {
@@ -71,6 +76,8 @@ char	*get_next_line(int fd)
 	int		i;
 	char	c;
 
+	if (fd == -1)
+		return (NULL);
 	buffer = ft_zerostring(BUFFER_SIZE + 1);
 	i = 0;
 	str = NULL;
@@ -81,6 +88,8 @@ char	*get_next_line(int fd)
 		newline_ptr = ft_strchr(buffer, '\n');
 		printf("Bytes read:%zd\n", bytes_read);
 		printf("Buffer:%s\n", buffer);
+		if (bytes_read == 0)
+			return (free(buffer), str);
 		if (bytes_read < BUFFER_SIZE)
 			printf("EOF found\n");
 		if (newline_ptr)
@@ -112,12 +121,20 @@ char	*get_next_line(int fd)
 	return (str);
 }
 
-int	main(void)
+int	main(int ac, char **av)
 {
-	int	fd;
+	int		fd;
+	char	*str;
 
-	fd = open("testfile", O_RDONLY);
-	printf("Descriptor:%d\n", fd);
-	printf("%s\n", get_next_line(fd));
+	if (ac == 2)
+		fd = open(av[1], O_RDONLY);
+	else
+		fd = open("testfile", O_RDONLY);
+	printf("%d\n", fd);
+	str = get_next_line(fd);
+	printf("-----------------------------------------\n");
+	printf("%s", str);
+	printf("-----------------------------------------\n");
+	free(str);
 	return (0);
 }
