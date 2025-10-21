@@ -6,7 +6,7 @@
 /*   By: ssharmaz <ssharmaz@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 15:02:20 by ssharmaz          #+#    #+#             */
-/*   Updated: 2025/10/19 20:49:21 by ssharmaz         ###   ########.fr       */
+/*   Updated: 2025/10/21 18:31:34 by ssharmaz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,8 @@ char	*get_next_line(int fd)
 			bytes_to_copy = bytes_read;
 		if (str)
 		{
-			printf("Increasing str\n");
-			if (!increase_str(&str, bytes_to_copy + 1))
+			printf("Increasing str to add %zd bytes\n", bytes_to_copy);
+			if (!increase_str(&str, bytes_to_copy))
 				return (free(str), free(buffer), NULL);
 		}
 		else
