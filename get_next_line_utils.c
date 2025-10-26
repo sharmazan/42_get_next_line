@@ -102,6 +102,17 @@ void	*ft_memset(void *s, int c, size_t n)
 	return (s);
 }
 
+void	ft_memcpy(void *dest, void *src, size_t len)
+{
+	char	*d;
+	char	*s;
+
+	d = (char *)dest;
+	s = (char *)src;
+	while (len--)
+		d[len] = s[len];
+}
+
 size_t	ft_strlen(const char *s)
 {
 	size_t	len;

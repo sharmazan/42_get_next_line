@@ -41,57 +41,50 @@ char	*increase_str(char **src, size_t size)
 {
 	char	*temp;
 	char	*str;
-	size_t	i;
 	size_t	srclen;
-
-	if (*src)
+	
+	if (!*src)
 	{
-		temp = ft_strdup(*src);
-		if (!temp)
-			return (NULL);
-		srclen = ft_strlen(temp);
+		*src = ft_zerostring(size + 1);
+		return (*src);
 	}
+	temp = ft_strdup(*src);
+	if (!temp)
+		return (NULL);
+	srclen = ft_strlen(temp);
 	str = ft_zerostring(srclen + size + 1);
 	if (!str)
 		return (free(temp), NULL);
-	i = 0;
-	while (i < srclen)
-	{
-		str[i] = temp[i];
-		i++;
-	}
+	ft_memcpy(str, temp, srclen);
 	free(*src);
-	free(temp);
 	*src = str;
-	return (str);
+	return (free(temp), str);
 }
 
 char	*get_next_line(int fd)
 {
+	static char	*str = NULL;
 	char	*buffer;
-	char	*str;
 	ssize_t	bytes_read;
 	ssize_t	bytes_to_copy;
 	char	*newline_ptr;
-	int		i;
-	char	c;
 
-	if (fd == -1)
-		return (NULL);
 	buffer = ft_zerostring(BUFFER_SIZE + 1);
-	i = 0;
-	str = NULL;
+	if (fd < 0 || !buffer)
+		return (NULL);
 	while (1)
 	{
 		printf("Reading from file\n");
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		newline_ptr = ft_strchr(buffer, '\n');
+		if (bytes_read == -1)
+			return (NULL);
 		printf("Bytes read:%zd\n", bytes_read);
 		printf("Buffer:%s\n", buffer);
 		if (bytes_read == 0)
 			return (free(buffer), str);
 		if (bytes_read < BUFFER_SIZE)
 			printf("EOF found\n");
+		newline_ptr = ft_strchr(buffer, '\n');
 		if (newline_ptr)
 		{
 			printf("New line found\n");
@@ -99,17 +92,8 @@ char	*get_next_line(int fd)
 		}
 		else
 			bytes_to_copy = bytes_read;
-		if (str)
-		{
-			printf("Increasing str to add %zd bytes\n", bytes_to_copy);
-			if (!increase_str(&str, bytes_to_copy))
-				return (free(str), free(buffer), NULL);
-		}
-		else
-		{
-			printf("Allocating %zd bytes to str\n", bytes_to_copy + 1);
-			str = ft_zerostring(bytes_to_copy + 1);
-		}
+		if (!increase_str(&str, bytes_to_copy))
+			return (free(str), free(buffer), NULL);
 		printf("Copy buffer to str\n");
 		ft_strlcat(str, buffer, ft_strlen(str) + bytes_to_copy + 1);
 		printf("str now:%s\n", str);
@@ -117,8 +101,13 @@ char	*get_next_line(int fd)
 			break ;
 		ft_memset(buffer, 0, BUFFER_SIZE);
 	}
-	free(buffer);
-	return (str);
+	return (free(buffer), str);
+}
+
+void	*ft_free(void *ptr)
+{
+	free(ptr);
+	return (NULL);
 }
 
 int	main(int ac, char **av)
@@ -136,5 +125,15 @@ int	main(int ac, char **av)
 	printf("%s", str);
 	printf("-----------------------------------------\n");
 	free(str);
+	// str = get_next_line(fd);
+	// printf("-----------------------------------------\n");
+	// printf("%s", str);
+	// printf("-----------------------------------------\n");
+	// free(str);
+	// str = get_next_line(fd);
+	// printf("-----------------------------------------\n");
+	// printf("%s", str);
+	// printf("-----------------------------------------\n");
+	// free(str);
 	return (0);
 }
