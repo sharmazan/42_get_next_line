@@ -6,7 +6,7 @@
 /*   By: ssharmaz <ssharmaz@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 15:02:20 by ssharmaz          #+#    #+#             */
-/*   Updated: 2025/10/27 19:11:35 by ssharmaz         ###   ########.fr       */
+/*   Updated: 2025/10/27 20:17:27 by ssharmaz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,37 +69,27 @@ char	*get_line(char **str)
 {
 	char	*buf;
 	char	*temp;
-	size_t	len;
 	size_t	i;
 
 	i = 0;
-	len = ft_strlen(*str);
-	while ((*str)[i] != 0 && (*str)[i] != '\n')
-		i++;
-	if (i == len)
-		return (*str);
-	buf = ft_substr(*str, 0, i + 1);
-	if (!buf)
+	if (!*str)
 		return (NULL);
-	temp = ft_substr(*str, i + 1, len + 1);
-	if (!temp)
-		return (NULL);
+	while ((*str)[i])
+		if ((*str)[i++] == '\n')
+			break ;
+	if (i == ft_strlen(*str))
+	{
+		buf = ft_strdup(*str);
+		free(*str);
+		*str = NULL;
+		return (buf);
+	}
+	buf = ft_substr(*str, 0, i);
+	temp = ft_substr(*str, i, ft_strlen(*str));
+	if (!buf || !temp)
+		return (free(buf), free(temp), NULL);
 	free(*str);
 	*str = temp;
-	return (buf);
-}
-
-char	*return_and_clear(char **str)
-{
-	char	*buf;
-
-	if (!(*str))
-		return (NULL);
-	buf = ft_strdup(*str);
-	if (!buf)
-		return (NULL);
-	free(*str);
-	*str = NULL;
 	return (buf);
 }
 
@@ -118,7 +108,7 @@ char	*get_next_line(int fd)
 		if (bytes_read == -1)
 			return (NULL);
 		if (bytes_read == 0)
-			return (free(buffer), return_and_clear(&storage));
+			break ;
 		if (!ft_realloc_str(&storage, bytes_read))
 			return (free(storage), free(buffer), NULL);
 		ft_strlcat(storage, buffer, ft_strlen(storage) + bytes_read + 1);
