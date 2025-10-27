@@ -6,7 +6,7 @@
 /*   By: ssharmaz <ssharmaz@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 15:02:20 by ssharmaz          #+#    #+#             */
-/*   Updated: 2025/10/19 19:56:32 by ssharmaz         ###   ########.fr       */
+/*   Updated: 2025/10/27 17:53:49 by ssharmaz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # endif
 
 # include <stddef.h>
+
 char	*get_next_line(int fd);
 char	*ft_strdup(const char *s);
 char	*ft_strchr(const char *s, int c);
