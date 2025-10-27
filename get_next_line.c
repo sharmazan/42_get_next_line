@@ -6,7 +6,7 @@
 /*   By: ssharmaz <ssharmaz@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 15:02:20 by ssharmaz          #+#    #+#             */
-/*   Updated: 2025/10/27 18:35:31 by ssharmaz         ###   ########.fr       */
+/*   Updated: 2025/10/27 19:11:35 by ssharmaz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,8 @@ char	*get_next_line(int fd)
 		ft_strlcat(storage, buffer, ft_strlen(storage) + bytes_read + 1);
 		if (bytes_read < BUFFER_SIZE)
 			break ;
-		ft_memset(buffer, 0, BUFFER_SIZE);
+		while (bytes_read--)
+			buffer[bytes_read] = 0;
 	}
 	return (free(buffer), get_line(&storage));
 }

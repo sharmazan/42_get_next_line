@@ -6,7 +6,7 @@
 /*   By: ssharmaz <ssharmaz@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 15:02:20 by ssharmaz          #+#    #+#             */
-/*   Updated: 2025/10/27 18:25:43 by ssharmaz         ###   ########.fr       */
+/*   Updated: 2025/10/27 19:13:05 by ssharmaz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,6 @@ char	*ft_strchr(const char *s, int c)
 		return (NULL);
 }
 
-//////////////////////////////////////////////
-///
-///
 char	*ft_strdup(const char *s)
 {
 	char	*ptr;
@@ -51,20 +48,6 @@ char	*ft_strdup(const char *s)
 	}
 	ptr[i] = 0;
 	return (ptr);
-}
-
-void	*ft_memset(void *s, int c, size_t n)
-{
-	size_t	i;
-	char	*p;
-
-	if (n == 0)
-		return (s);
-	i = 0;
-	p = (char *)s;
-	while (i < n)
-		p[i++] = (unsigned char)c;
-	return (s);
 }
 
 size_t	ft_strlen(const char *s)
