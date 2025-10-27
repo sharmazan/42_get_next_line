@@ -6,7 +6,7 @@
 /*   By: ssharmaz <ssharmaz@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 15:02:20 by ssharmaz          #+#    #+#             */
-/*   Updated: 2025/10/21 19:04:33 by ssharmaz         ###   ########.fr       */
+/*   Updated: 2025/10/27 16:35:58 by ssharmaz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 //   read from file BUFFER_SIZE bytes to buffer
 //   if error (bytes_read == -1 -> return NULL)
 //   increase storage, save buffer to storage
-//   if bytes_read < BUFFER_SIZE: break; 
+//   if bytes_read < BUFFER_SIZE: break ;
 // if \n in storage: return substr with \n, store everything else to storage
 // else return storage
 
@@ -52,7 +52,7 @@ char	*ft_realloc_str(char **src, size_t size)
 	char	*temp;
 	char	*str;
 	size_t	srclen;
-	
+
 	if (!*src)
 	{
 		*src = ft_zerostring(size + 1);
@@ -88,7 +88,7 @@ char	*get_line(char **str)
 	len = ft_strlen(*str);
 	while (*str[i] != 0 || *str[i] != '\n')
 		i++;
-	if (i = len)
+	if (i == len)
 		return (*str);
 	buf = ft_substr(*str, 0, i);
 	if (!buf)
@@ -104,10 +104,8 @@ char	*get_line(char **str)
 char	*get_next_line(int fd)
 {
 	static char	*storage = NULL;
-	char	*buffer;
-	ssize_t	bytes_read;
-	ssize_t	bytes_to_copy;
-	char	*newline_ptr;
+	char		*buffer;
+	ssize_t		bytes_read;
 
 	buffer = ft_zerostring(BUFFER_SIZE + 1);
 	if (fd < 0 || !buffer)
@@ -129,7 +127,7 @@ char	*get_next_line(int fd)
 		printf("Copy buffer to str\n");
 		ft_strlcat(storage, buffer, ft_strlen(storage) + bytes_read + 1);
 		printf("storage now:%s\n", storage);
-		if (bytes_to_copy < BUFFER_SIZE)
+		if (bytes_read < BUFFER_SIZE)
 			break ;
 		ft_memset(buffer, 0, BUFFER_SIZE);
 	}
