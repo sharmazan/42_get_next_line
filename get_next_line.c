@@ -17,6 +17,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+// ALGO:
+// if fd < 0 -> return NULL
+// if not \n in storage: read in loop
+//   read from file BUFFER_SIZE bytes to buffer
+//   if error (bytes_read == -1 -> return NULL)
+//   increase storage, save buffer to storage
+//   if bytes_read < BUFFER_SIZE: break; 
+// if \n in storage: return substr with \n, store everything else to storage
+// else return storage
+
 // Handled:
 // not existing fd==-1 - return null
 // zero-file - return null
@@ -37,7 +47,7 @@ char	*ft_zerostring(size_t size)
 	return (s);
 }
 
-char	*increase_str(char **src, size_t size)
+char	*ft_realloc_str(char **src, size_t size)
 {
 	char	*temp;
 	char	*str;
@@ -61,9 +71,39 @@ char	*increase_str(char **src, size_t size)
 	return (free(temp), str);
 }
 
+void	*ft_free(void *ptr)
+{
+	free(ptr);
+	return (NULL);
+}
+
+char	*get_line(char **str)
+{
+	char	*buf;
+	char	*temp;
+	size_t	len;
+	size_t	i;
+
+	i = 0;
+	len = ft_strlen(*str);
+	while (*str[i] != 0 || *str[i] != '\n')
+		i++;
+	if (i = len)
+		return (*str);
+	buf = ft_substr(*str, 0, i);
+	if (!buf)
+		return (NULL);
+	temp = ft_substr(*str, i, len);
+	if (!temp)
+		return (NULL);
+	free(*str);
+	*str = temp;
+	return (buf);
+}
+
 char	*get_next_line(int fd)
 {
-	static char	*str = NULL;
+	static char	*storage = NULL;
 	char	*buffer;
 	ssize_t	bytes_read;
 	ssize_t	bytes_to_copy;
@@ -72,7 +112,7 @@ char	*get_next_line(int fd)
 	buffer = ft_zerostring(BUFFER_SIZE + 1);
 	if (fd < 0 || !buffer)
 		return (NULL);
-	while (1)
+	while (!ft_strchr(storage, '\n'))
 	{
 		printf("Reading from file\n");
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
@@ -81,33 +121,19 @@ char	*get_next_line(int fd)
 		printf("Bytes read:%zd\n", bytes_read);
 		printf("Buffer:%s\n", buffer);
 		if (bytes_read == 0)
-			return (free(buffer), str);
-		if (bytes_read < BUFFER_SIZE)
-			printf("EOF found\n");
-		newline_ptr = ft_strchr(buffer, '\n');
-		if (newline_ptr)
-		{
-			printf("New line found\n");
-			bytes_to_copy = newline_ptr - buffer + 1;
-		}
-		else
-			bytes_to_copy = bytes_read;
-		if (!increase_str(&str, bytes_to_copy))
-			return (free(str), free(buffer), NULL);
+			return (free(buffer), storage);
+		// if (bytes_read < BUFFER_SIZE)
+		// 	printf("EOF found\n");
+		if (!ft_realloc_str(&storage, bytes_read))
+			return (free(storage), free(buffer), NULL);
 		printf("Copy buffer to str\n");
-		ft_strlcat(str, buffer, ft_strlen(str) + bytes_to_copy + 1);
-		printf("str now:%s\n", str);
+		ft_strlcat(storage, buffer, ft_strlen(storage) + bytes_read + 1);
+		printf("storage now:%s\n", storage);
 		if (bytes_to_copy < BUFFER_SIZE)
 			break ;
 		ft_memset(buffer, 0, BUFFER_SIZE);
 	}
-	return (free(buffer), str);
-}
-
-void	*ft_free(void *ptr)
-{
-	free(ptr);
-	return (NULL);
+	return (free(buffer), get_line(&storage));
 }
 
 int	main(int ac, char **av)
