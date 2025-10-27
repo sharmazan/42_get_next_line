@@ -150,3 +150,43 @@ size_t	ft_strlcat(char *dst, const char *src, size_t size)
 	dst[dlen + i] = '\0';
 	return (dlen + slen);
 }
+
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	char	*newstr;
+	size_t	i;
+
+	i = 0;
+	while (s[i] && i < start)
+		i++;
+	if (!s[i] || len == 0)
+		return (ft_strdup(""));
+	s += i;
+	i = 0;
+	while (s[i] && i < len)
+		i++;
+	newstr = malloc((i + 1) * sizeof(char));
+	if (!newstr)
+		return (NULL);
+	ft_strlcpy(newstr, s, i + 1);
+	return (newstr);
+}
+
+size_t	ft_strlcpy(char *dst, const char *src, size_t size)
+{
+	size_t	i;
+
+	if (size == 0)
+		return (ft_strlen(src));
+	i = 0;
+	while ((i < size - 1) && src[i])
+	{
+		dst[i] = src[i];
+		i++;
+	}
+	if (size != 0)
+		dst[i] = 0;
+	while (src[i])
+		i++;
+	return (i);
+}
