@@ -6,14 +6,12 @@
 /*   By: ssharmaz <ssharmaz@student.42vienna.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 15:02:20 by ssharmaz          #+#    #+#             */
-/*   Updated: 2025/10/21 19:04:33 by ssharmaz         ###   ########.fr       */
+/*   Updated: 2025/10/27 19:11:35 by ssharmaz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <fcntl.h>
-#include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -23,17 +21,12 @@
 //   read from file BUFFER_SIZE bytes to buffer
 //   if error (bytes_read == -1 -> return NULL)
 //   increase storage, save buffer to storage
-//   if bytes_read < BUFFER_SIZE: break; 
+//   if bytes_read < BUFFER_SIZE: break ;
 // if \n in storage: return substr with \n, store everything else to storage
 // else return storage
 
-// Handled:
-// not existing fd==-1 - return null
-// zero-file - return null
-// BUFFER_SIZE in the file - return BUFFER_SIZE bytes + 0 in the end
-// more then BUFFER_SIZE - return the string
 // TODO
-// save the rest of the buffer after reaching a new_line to continue reading later
+// save fd and storage in a linked list to read from several files
 
 char	*ft_zerostring(size_t size)
 {
@@ -52,7 +45,7 @@ char	*ft_realloc_str(char **src, size_t size)
 	char	*temp;
 	char	*str;
 	size_t	srclen;
-	
+
 	if (!*src)
 	{
 		*src = ft_zerostring(size + 1);
@@ -65,16 +58,11 @@ char	*ft_realloc_str(char **src, size_t size)
 	str = ft_zerostring(srclen + size + 1);
 	if (!str)
 		return (free(temp), NULL);
-	ft_memcpy(str, temp, srclen);
+	while (srclen--)
+		str[srclen] = temp[srclen];
 	free(*src);
 	*src = str;
 	return (free(temp), str);
-}
-
-void	*ft_free(void *ptr)
-{
-	free(ptr);
-	return (NULL);
 }
 
 char	*get_line(char **str)
@@ -86,14 +74,14 @@ char	*get_line(char **str)
 
 	i = 0;
 	len = ft_strlen(*str);
-	while (*str[i] != 0 || *str[i] != '\n')
+	while ((*str)[i] != 0 && (*str)[i] != '\n')
 		i++;
-	if (i = len)
+	if (i == len)
 		return (*str);
-	buf = ft_substr(*str, 0, i);
+	buf = ft_substr(*str, 0, i + 1);
 	if (!buf)
 		return (NULL);
-	temp = ft_substr(*str, i, len);
+	temp = ft_substr(*str, i + 1, len + 1);
 	if (!temp)
 		return (NULL);
 	free(*str);
@@ -101,65 +89,43 @@ char	*get_line(char **str)
 	return (buf);
 }
 
+char	*return_and_clear(char **str)
+{
+	char	*buf;
+
+	if (!(*str))
+		return (NULL);
+	buf = ft_strdup(*str);
+	if (!buf)
+		return (NULL);
+	free(*str);
+	*str = NULL;
+	return (buf);
+}
+
 char	*get_next_line(int fd)
 {
 	static char	*storage = NULL;
-	char	*buffer;
-	ssize_t	bytes_read;
-	ssize_t	bytes_to_copy;
-	char	*newline_ptr;
+	char		*buffer;
+	ssize_t		bytes_read;
 
 	buffer = ft_zerostring(BUFFER_SIZE + 1);
 	if (fd < 0 || !buffer)
 		return (NULL);
 	while (!ft_strchr(storage, '\n'))
 	{
-		printf("Reading from file\n");
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read == -1)
 			return (NULL);
-		printf("Bytes read:%zd\n", bytes_read);
-		printf("Buffer:%s\n", buffer);
 		if (bytes_read == 0)
-			return (free(buffer), storage);
-		// if (bytes_read < BUFFER_SIZE)
-		// 	printf("EOF found\n");
+			return (free(buffer), return_and_clear(&storage));
 		if (!ft_realloc_str(&storage, bytes_read))
 			return (free(storage), free(buffer), NULL);
-		printf("Copy buffer to str\n");
 		ft_strlcat(storage, buffer, ft_strlen(storage) + bytes_read + 1);
-		printf("storage now:%s\n", storage);
-		if (bytes_to_copy < BUFFER_SIZE)
+		if (bytes_read < BUFFER_SIZE)
 			break ;
-		ft_memset(buffer, 0, BUFFER_SIZE);
+		while (bytes_read--)
+			buffer[bytes_read] = 0;
 	}
 	return (free(buffer), get_line(&storage));
-}
-
-int	main(int ac, char **av)
-{
-	int		fd;
-	char	*str;
-
-	if (ac == 2)
-		fd = open(av[1], O_RDONLY);
-	else
-		fd = open("testfile", O_RDONLY);
-	printf("%d\n", fd);
-	str = get_next_line(fd);
-	printf("-----------------------------------------\n");
-	printf("%s", str);
-	printf("-----------------------------------------\n");
-	free(str);
-	// str = get_next_line(fd);
-	// printf("-----------------------------------------\n");
-	// printf("%s", str);
-	// printf("-----------------------------------------\n");
-	// free(str);
-	// str = get_next_line(fd);
-	// printf("-----------------------------------------\n");
-	// printf("%s", str);
-	// printf("-----------------------------------------\n");
-	// free(str);
-	return (0);
 }
